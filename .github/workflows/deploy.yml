@@ -10,7 +10,7 @@ on:
       - 'images/**'
       - 'LICENSE.txt'
       - 'README.txt'
-
+  workflow_dispatch:
 permissions:
   id-token: write
   contents: read
