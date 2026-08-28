@@ -1,0 +1,43 @@
+name: Deploy Resume Site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'images/**'
+      - 'LICENSE.txt'
+      - 'README.txt'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::584477830979:role/github-actions-deploy-role
+          aws-region: us-east-2
+
+      - name: Sync site files to S3
+        run: |
+          aws s3 sync . s3://vinnys-cloud-resume-584477830979-us-east-2-an \
+            --exclude "terraform/*" \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --delete
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id E2BT8B5RMAXJ0V \
+            --paths "/*"
