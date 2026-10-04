@@ -9,7 +9,7 @@ on:
       - 'assets/**'
       - 'images/**'
       - 'LICENSE.txt'
-      - 'README.txt'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 permissions:
   id-token: write
@@ -34,7 +34,18 @@ jobs:
             --exclude "terraform/*" \
             --exclude ".git/*" \
             --exclude ".github/*" \
+            --exclude "lambda/*" \
+            --exclude "README*" \
+            --exclude ".gitignore" \
             --delete
+
+      # sync --delete skips excluded paths, so remove anything that was
+      # uploaded before these excludes existed (no-op once it's clean)
+      - name: Remove non-site files from bucket
+        run: |
+          aws s3 rm s3://vinnys-cloud-resume-584477830979-us-east-2-an/lambda/ --recursive
+          aws s3 rm s3://vinnys-cloud-resume-584477830979-us-east-2-an/README.txt
+          aws s3 rm s3://vinnys-cloud-resume-584477830979-us-east-2-an/README.md
 
       - name: Invalidate CloudFront cache
         run: |
