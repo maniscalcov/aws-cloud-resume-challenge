@@ -1,6 +1,6 @@
 # AWS Cloud Resume Challenge
 
-This is a resume site built on aws, I built this project to differ from the normal cloud resume challenge by adding in a working AI chatbot and also adding in a working contact me. This project is managed and provisioned through terraform.
+This is a resume site built on AWS. I built this project to differ from the normal Cloud Resume Challenge by adding a working AI chatbot and a working contact form. The whole project is provisioned and managed through Terraform.
 
 **Live site:** https://vinnymaniscalco.dev
 
@@ -65,21 +65,22 @@ Chatbot and contact form share one API Gateway in `us-east-2`; the visitor count
 
 ## Cost controls on the chatbot
 
-Since the chatbot calls a paid LLM API, I added in some protection on 3 different layers so traffic spikes will not cost me to have a spike in cost:
+Since the chatbot calls a paid LLM API, I added protection at 4 different layers so a spike in traffic won't turn into a spike in cost:
 
 1. **API Gateway throttling** — 2 requests/sec, burst of 5
 2. **Daily quota** — a hard cap on total chatbot messages per day, enforced via an atomic DynamoDB counter
 3. **Per-call limits** — capped input length, capped output tokens, and a trimmed conversation history window
+4. **AWS Budget** — a $10/month account budget that emails me at 80% and 100% of actual spend, and when the month is forecast to go over
 
 ---
 
 ## What I learned
 
-- Bedrock requires the inference profile ARN, not the foundation model ARN, and the first invocation needs marketplace-subscription permissions on the Lambda's execution role. During this step I ran into the error where I did not have the correct limit and was required to incress them.
-- API Gateway's CORS configuration alone doesn't add headers to Lambda proxy integration responses, the Lambda itself has to return them.
-- S3 object keys are case-sensitive; `.JPG` and `.jpg` are different objects, and a mismatch returns a 403, not a 404. During my editing of the site I placed a file with the wrong caps ran into this error.
-- Terraform's `state rm` and provider aliasing become essential fast once a project spans more than one AWS region
-- Least-privilege IAM policies for a `terraform-cli` user tend to grow with every new resource added. I started with limited permissions and needed to adjust my permisions with most of my new resouces.
+- Bedrock requires the inference profile ARN, not the foundation model ARN, and the first invocation needs marketplace-subscription permissions on the Lambda's execution role. During this step I ran into an error because my account's quota wasn't high enough, and I had to request an increase.
+- API Gateway's CORS configuration alone doesn't add headers to Lambda proxy integration responses; the Lambda itself has to return them.
+- S3 object keys are case-sensitive; `.JPG` and `.jpg` are different objects, and a mismatch returns a 403, not a 404. While editing the site, I uploaded a file with the wrong capitalization and ran into this error.
+- Terraform's `state rm` and provider aliasing become essential fast once a project spans more than one AWS region.
+- Least-privilege IAM policies for a `terraform-cli` user tend to grow with every new resource added. I started with limited permissions and had to expand them for almost every new resource I added.
 
 ---
 
@@ -113,4 +114,4 @@ terraform plan
 terraform apply
 ```
 
-You'll need your own S3 bucket, verified SES identity, and Bedrock model access configured first — see the Terraform files for the exact resources and required variables.
+You'll need your own S3 bucket, verified SES identity, and Bedrock model access configured first — see the Terraform files for the exact resources and required variables. You'll also need a domain registered in Route 53 (set `domain_name` in `variables.tf`) and a `terraform.tfvars` file containing `budget_alert_email = "you@example.com"`.
