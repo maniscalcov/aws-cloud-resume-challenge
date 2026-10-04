@@ -99,7 +99,7 @@ Since the chatbot calls a paid LLM API, I added in some protection on 3 differen
 - [x] Full Terraform coverage
 - [x] CI/CD via GitHub Actions
 - [x] Custom domain via Route 53 (ACM cert + CloudFront alias, managed in Terraform)
-- [ ] AWS Budget alert as a cost backstop
+- [x] AWS Budget alert as a cost backstop ($10/month, managed in Terraform)
 
 ---
 
