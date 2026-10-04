@@ -134,7 +134,7 @@ resource "aws_apigatewayv2_api" "chatbot" {
     allow_credentials = false
     allow_methods     = ["POST"]
     allow_headers     = ["Content-Type"]
-    allow_origins     = ["http://127.0.0.1:5500", "https://d3v6sllvp0c9mk.cloudfront.net"]
+    allow_origins     = local.cors_origins
   }
 
   tags = { Project = "cloud-resume-challenge" }

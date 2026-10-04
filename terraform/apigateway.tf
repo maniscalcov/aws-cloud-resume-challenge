@@ -6,7 +6,7 @@ resource "aws_apigatewayv2_api" "visitor_counter" {
   cors_configuration {
     allow_credentials = false
     allow_methods     = ["GET"]
-    allow_origins     = ["https://d3v6sllvp0c9mk.cloudfront.net"]
+    allow_origins     = local.cors_origins
   }
 }
 

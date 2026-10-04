@@ -10,6 +10,7 @@ resource "aws_cloudfront_distribution" "resume_site" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
+  aliases             = local.site_domains
   web_acl_id          = "arn:aws:wafv2:us-east-1:${data.aws_caller_identity.current.account_id}:global/webacl/CreatedByCloudFront-ccb9ec2c/4e4dcdb7-91e4-4f4e-9a2f-9e99948121ee"
 
   tags = {
@@ -38,6 +39,8 @@ resource "aws_cloudfront_distribution" "resume_site" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate_validation.site.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
