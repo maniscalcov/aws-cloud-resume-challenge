@@ -4,6 +4,8 @@ This is a resume site built on aws, I built this project to differ from the norm
 
 **Live site:** https://vinnymaniscalco.dev
 
+**LinkedIn:** [linkedin.com/in/vinny-maniscalco-291363372](https://www.linkedin.com/in/vinny-maniscalco-291363372)
+
 ---
 
 ## What's on it
